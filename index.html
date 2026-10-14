@@ -235,6 +235,13 @@ details.set summary{cursor:pointer;font-weight:500}
 .hist details{border:1px solid var(--line);border-radius:12px;padding:10px 12px;background:var(--surface)}
 .hist summary{cursor:pointer;display:flex;justify-content:space-between;gap:10px;font-size:14px;list-style:none}
 .hist summary::-webkit-details-marker{display:none}
+/* glossary */
+.terms{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.termchip{border:1px dashed var(--accent);background:var(--accent-soft);color:var(--accent);border-radius:99px;padding:4px 10px;font-size:13px;font-weight:500}
+.sheet-bg{position:fixed;inset:0;background:rgba(10,20,15,.45);z-index:20}
+.bsheet{position:fixed;left:0;right:0;bottom:0;z-index:21;background:var(--surface);border-radius:20px 20px 0 0;padding:20px 20px calc(24px + env(safe-area-inset-bottom,0px));display:grid;gap:12px;max-width:760px;margin:0 auto;box-shadow:0 -10px 30px rgba(0,0,0,.2);animation:up .2s ease}
+@keyframes up{from{transform:translateY(30px);opacity:0}}
+.gsearch{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--line);background:var(--surface)}
 /* game map */
 :root{--c1:#1D72C2;--c2:#0B7D5F;--c3:#6E4BC9;--c4:#B85A1E;--c5:#B0346A;--c6:#24808A;--gold:#E3A21A}
 .gamebar{display:flex;align-items:center;gap:14px;padding-block:4px}
@@ -970,6 +977,108 @@ CH.push({id:'job', title:'Как получить приглашение на с
 ]});
 </script>
 <script>
+// format-4: design process lesson (appended to the format chapter)
+CH.find(c=>c.id==='format').lessons.push(
+ {id:'format-4', title:'Ваш процесс: Double Diamond и как о нём рассказать', ask:true,
+  open:{q:'Расскажите о вашем процессе дизайна на примере последнего проекта.', hint:['Не пересказывайте схему — покажите, как прошли этапы на конкретной задаче','Где расширяли поиск (исследование, варианты), где сужали (формулировка проблемы, выбор)','Что пропустили или сократили и почему, чем рискнули']},
+  summary:[
+   'Double Diamond (Британский совет по дизайну) — два ромба: сначала разобраться в проблеме, потом найти решение. Каждый ромб — расширение (собираем много) и сужение (выбираем главное).',
+   'Первый ромб: Discover — исследование, данные, интервью, конкуренты; Define — формулировка проблемы и цели («пользователи бросают оплату, потому что…»). Второй: Develop — много вариантов решения; Deliver — проверка, выбор, доработка и запуск.',
+   'Похожие схемы: дизайн-мышление (эмпатия → определение → идеи → прототип → тест) и Lean UX (сделать → измерить → научиться). Суть одна: не начинать с экранов и проверять до разработки.',
+   'На собесе процесс не пересказывают по учебнику. Рассказывают, как он прошёл на реальной задаче: что сделали на каждом этапе, что пропустили из-за сроков и чем за это заплатили. Процесс нелинейный: после теста часто возвращаются назад.',
+  ], q:[
+   {t:'Что происходит в первом ромбе Double Diamond?', o:['Разбираемся в проблеме: исследуем, затем формулируем, что именно решаем','Генерируем много вариантов интерфейса и выбираем лучший по итогам тестов','Собираем требования бизнеса и сразу утверждаем техническое задание на фичу','Рисуем вайрфреймы ключевых экранов, а затем отдаём их на визуальную проработку'], c:0, e:['Первый ромб — Discover и Define: понять проблему и чётко её сформулировать до поиска решений.','Генерация и выбор вариантов — это второй ромб, Develop и Deliver, а не первый.','Утверждение ТЗ без исследования пропускает именно то, ради чего нужен первый ромб.','Вайрфреймы — уже поиск решения, то есть второй ромб; первый про проблему, а не про экраны.'], d:1},
+   {t:'Что означают «расширение» и «сужение» в каждом ромбе?', o:['Расширение — наращиваем список фич, сужение — режем его до состава MVP релиза','Расширение — собираем много данных или идей, сужение — выбираем главное','Расширение — работа всей команды, сужение — доработка одним дизайнером перед релизом','Расширение — десктопная версия, сужение — адаптация интерфейса под мобильные экраны'], c:1, e:['Это про объём продукта, а схема описывает ход мышления, а не скоуп релиза.','Дивергенция и конвергенция: сначала открываем пространство вариантов, потом осознанно его сужаем.','Состав команды схема не описывает: расширяться и сужаться может и один дизайнер.','К платформам и адаптиву схема отношения не имеет.'], d:1},
+   {t:'Продакт приносит задачу «сделать новый экран фильтров». Где вы в Double Diamond, если сразу начнёте рисовать фильтры?', o:['В начале первого: это Discover, исследование проблемы через макеты','В правильном месте: продакт уже сформулировал задачу, Define пройден','Во втором ромбе: решение выбрано раньше, чем понята проблема','В конце второго ромба: осталось доработать детали и передать в разработку'], c:2, e:['Рисование экранов — поиск решения, а не исследование проблемы.','Формулировка «сделать экран» — это решение, а не проблема; Define так и не случился.','Типичная ловушка: решение выбрано заранее, и ромб проблемы пропущен целиком.','До доработки деталей ещё далеко: варианты решения даже не рассматривались.'], d:2},
+   {t:'Интервьюер: «Расскажите о вашем процессе». Какой ответ сильнее?', o:['«Работаю по Double Diamond: Discover, Define, Develop, Deliver, на каждом этапе подбираю методы»','«Исследование, CJM, персоны, вайрфреймы, прототип, UI, юзабилити-тесты и передача в разработку»','«На проекте оплаты: воронка и 5 интервью → проблема в доставке → 3 варианта → тест → релиз»','«Процесс зависит от задачи и команды, поэтому один универсальный процесс назвать сложно»'], c:2, e:['Пересказ схемы без примера не показывает, умеете ли вы её применять.','Список артефактов похож на чек-лист с курсов и не показывает решений и выбора.','Процесс на реальной задаче: что узнали, как сузили, сколько вариантов, как проверили — это и ждут.','Правда, но без примера звучит как уход от ответа.'], d:2},
+   {t:'Сроки сжаты, исследование провести не успеваете. Как об этом честно сказать на собесе?', o:['Промолчать: признание пропуска этапа обычно снижает оценку вашего процесса у лида','Сказать, что первый ромб прошли на опыте команды, а этого обычно бывает достаточно','Сказать, что исследование всё же провели, но кратко, чтобы не вызывать лишних вопросов','Назвать, чем заменили исследование, какой риск приняли и как проверили после запуска'], c:3, e:['Пропуски видны по кейсу, а умолчание выглядит хуже честного объяснения.','«Опыт команды» без свидетельств звучит как оправдание и не показывает, чем закрыли риск.','Приукрашивание вскрывается уточняющими вопросами и подрывает доверие.','Осознанный компромисс с названным риском и проверкой — признак зрелого мидла.'], d:2},
+   {t:'Чем Double Diamond похож на цикл Lean UX «сделать → измерить → научиться»?', o:['Обе требуют полного исследования пользователей до создания любого прототипа','Обе про проверку гипотез до больших вложений и возврат назад по результатам','Обе описывают порядок передачи макетов, состояний и спецификаций в разработку','Обе работают только в больших компаниях с отдельным отделом исследований'], c:1, e:['Lean UX как раз допускает минимальное исследование и быстрый прототип вместо долгой фазы Discover.','Общее — итерации и проверка до дорогой разработки; это и стоит назвать на собесе.','Ни одна из схем не про handoff; они про поиск правильной проблемы и решения.','Обе работают и в маленьких командах; Lean UX и придуман для быстрых команд без отдельных исследователей.'], d:3},
+  ]});
+
+// ---------- glossary ----------
+// a: aliases; '*' at the end = stem (Russian endings), otherwise whole word. l: lesson where it is explained.
+const GLOSSARY = [
+ {t:'Double Diamond', a:['Double Diamond','двойн* алмаз*','дабл даймонд*'], d:'Схема процесса из двух ромбов: сначала разобраться в проблеме (исследовать и сформулировать), потом найти решение (придумать варианты, проверить, выпустить).', x:'«Discover → Define → Develop → Deliver».', l:'format-4'},
+ {t:'Дизайн-мышление', a:['дизайн-мышлени*','design thinking'], d:'Подход «эмпатия → определение проблемы → идеи → прототип → тест». По смыслу близок к Double Diamond.', l:'format-4'},
+ {t:'Lean UX', a:['Lean UX'], d:'Быстрые циклы «сделать → измерить → научиться»: минимальный прототип вместо долгой проработки, проверка гипотезы как можно раньше.', l:'format-4'},
+ {t:'Discovery и delivery', a:['discovery','delivery','dual-track','дискавери'], d:'Discovery — понять проблему и проверить гипотезы до разработки. Delivery — довести проверенное решение до релиза. В зрелых командах идут параллельно (dual-track).', l:'process-1'},
+ {t:'CJM', a:['CJM','Customer Journey Map','карт* пути'], d:'Карта пути пользователя по этапам: действия, мысли, эмоции, точки боли, каналы. Нужна, когда опыт ломается между экранами, каналами или командами.', x:'Сайт → звонок в поддержку → курьер → приложение.', l:'design-1'},
+ {t:'JTBD', a:['JTBD','Jobs To Be Done','job story','job stories'], d:'«Работа», для которой человек «нанимает» продукт. Формула: «Когда [ситуация], я хочу [мотивация], чтобы [результат]». Отделяет задачу от решения.', l:'design-1'},
+ {t:'User Story Map', a:['User Story Map','USM','story map*'], d:'Шаги сценария по горизонтали, детали по вертикали. Горизонтальный срез = объём релиза, удобно решать, что войдёт в MVP.', l:'design-1'},
+ {t:'Персоны', a:['персон*','persona*'], d:'Обобщённые портреты пользователей. Полезны, если описывают задачи и контекст, а не хобби и возраст.', l:'whiteboard-1'},
+ {t:'MVP', a:['MVP'], d:'Минимальная версия продукта, которой хватает, чтобы проверить главную гипотезу на реальных пользователях.', l:'design-1'},
+ {t:'Бенчмаркинг', a:['бенчмаркинг*','benchmark*'], d:'Разбор, какие задачи и как решают конкуренты и аналоги, с оценкой, что применимо к вашему контексту. Не копирование.', l:'design-1'},
+ {t:'User flow', a:['user flow','флоу','flow'], d:'Схема шагов сценария: экраны, решения, ветки, ошибки. Рисуется до макетов.', l:'design-2'},
+ {t:'Happy path', a:['happy path'], d:'Основной сценарий, в котором всё идёт по плану. От него потом строят ветки и ошибки.', l:'design-2'},
+ {t:'Edge cases', a:['edge case*','граничн* случа*','краев* случа*'], d:'Граничные случаи: пусто, ошибка, нет сети, длинный текст, нет прав, повторное действие. Их проектирование — признак мидла.', l:'design-2'},
+ {t:'IA', a:['IA','информационн* архитектур*'], d:'Информационная архитектура: где что лежит и как называется. Проверяется карточной сортировкой и tree testing.', l:'design-3'},
+ {t:'Карточная сортировка', a:['карточн* сортировк*','card sorting'], d:'Пользователи раскладывают пункты по группам — так видно, как они сами понимают структуру.', l:'design-3'},
+ {t:'Tree testing', a:['tree test*'], d:'Проверка, находят ли люди пункт в текстовой структуре разделов без дизайна. Чистая проверка IA.', l:'design-3'},
+ {t:'B2B', a:['B2B'], d:'Продукты для бизнеса и сотрудников: админки, CRM, внутренние инструменты. Много таблиц, фильтров, ролей и массовых действий.', l:'design-4'},
+ {t:'AARRR', a:['AARRR'], d:'Воронка «пиратских метрик»: привлечение → активация → удержание → доход → рекомендации.', l:'product-1'},
+ {t:'Конверсия', a:['конверси*'], d:'Доля пользователей, перешедших с одного шага на следующий.', x:'Из 1000 открывших корзину 400 оплатили — конверсия 40%.', l:'product-1'},
+ {t:'Воронка', a:['воронк*','funnel'], d:'Последовательность шагов с долей дошедших на каждом. Показывает, где теряются пользователи.', l:'product-4'},
+ {t:'Retention', a:['retention','удержани*','D1','D7','D30'], d:'Доля пользователей, вернувшихся через N дней после первого визита (D1, D7, D30).', l:'product-1'},
+ {t:'Churn', a:['churn','отток*'], d:'Отток — доля ушедших пользователей. Обратная сторона удержания.', l:'product-1'},
+ {t:'DAU / MAU', a:['DAU','MAU','WAU'], d:'Число активных пользователей за день, месяц, неделю.', l:'product-1'},
+ {t:'Когорта', a:['когорт*'], d:'Группа пользователей, пришедших в один период. Когортная таблица показывает, как меняется их удержание по неделям.', l:'product-4'},
+ {t:'North Star Metric', a:['North Star','NSM'], d:'Одна метрика ценности продукта для пользователя, которая предсказывает выручку.', x:'«Доставленных заказов на пользователя в неделю».', l:'product-1'},
+ {t:'Guardrail-метрики', a:['guardrail*','ограничител*'], d:'Метрики-ограничители, которые не должны ухудшиться, пока вы улучшаете целевую: отток, жалобы, время задачи.', l:'product-1'},
+ {t:'HEART', a:['HEART'], d:'Рамка UX-метрик Google: Happiness, Engagement, Adoption, Retention, Task success. Для каждой цели — сигнал и метрика.', l:'product-1'},
+ {t:'NPS', a:['NPS'], d:'Индекс готовности рекомендовать продукт: «Насколько вероятно, что вы порекомендуете…» по шкале 0–10.', l:'product-1'},
+ {t:'CSAT / SUS', a:['CSAT','SUS'], d:'CSAT — удовлетворённость конкретным взаимодействием. SUS — стандартный опросник удобства из 10 вопросов.', l:'product-1'},
+ {t:'Гипотеза', a:['гипотез*','HADI'], d:'Проверяемое предположение: «Если изменим X для сегмента Y, метрика Z изменится, потому что…». HADI — цикл гипотеза → действие → данные → выводы.', l:'product-2'},
+ {t:'RICE / ICE', a:['RICE','ICE'], d:'Приоритизация: Reach × Impact × Confidence / Effort. ICE — то же без охвата.', l:'product-2'},
+ {t:'LTV / CAC', a:['LTV','CAC'], d:'LTV — доход с пользователя за всё время. CAC — стоимость привлечения одного клиента. Продукт живёт, когда LTV заметно больше CAC.', l:'product-3'},
+ {t:'Тёмный паттерн', a:['тёмн* паттерн*','темн* паттерн*','dark pattern*'], d:'Интерфейс, который обманом подталкивает к выгодному бизнесу действию: спрятанная отмена, фальшивый таймер.', l:'product-3'},
+ {t:'Amplitude / Метрика', a:['Amplitude','Яндекс.Метрик*','AppMetrica'], d:'Инструменты продуктовой аналитики: воронки, когорты, события.', l:'product-4'},
+ {t:'Качественные и количественные методы', a:['качественн*','количественн*'], d:'Количественные (аналитика, опросы, A/B) отвечают «что и сколько». Качественные (интервью, юзабилити-тесты) — «почему».', l:'research-1'},
+ {t:'Юзабилити-тест', a:['юзабилити*','usability'], d:'Наблюдение, как человек выполняет реальную задачу в интерфейсе. Для одного сценария обычно хватает 5–6 участников.', l:'research-1'},
+ {t:'Коридорный тест', a:['коридорн*'], d:'Быстрая проверка прототипа на коллегах или случайных людях без рекрутинга. Отсеивает очевидные проблемы за час.', l:'research-1'},
+ {t:'CustDev', a:['CustDev','кастдев*'], d:'Интервью с клиентами, чтобы понять их задачи и проблемы до создания решения.', l:'research-2'},
+ {t:'Аффинити-карта', a:['аффинити*','affinity'], d:'Группировка наблюдений из исследования по смыслу, чтобы увидеть паттерны и сформулировать инсайты.', l:'research-2'},
+ {t:'Инсайт', a:['инсайт*'], d:'Объяснение поведения пользователей, из которого следуют гипотезы. Не цитата и не мнение.', x:'«Не включают автосписание, потому что не понимают, когда и сколько спишут».', l:'research-2'},
+ {t:'Триангуляция', a:['триангуляци*'], d:'Проверка вывода несколькими источниками: аналитика + записи сессий + разговоры с пользователями.', l:'research-1'},
+ {t:'A/B-тест', a:['A/B*','АБ-тест*','сплит-тест*'], d:'Сравнение вариантов на случайно разделённых группах пользователей. Нужны рандомизация, достаточная выборка и полный недельный цикл.', l:'research-3'},
+ {t:'Статистическая значимость', a:['значимост*','статистическ* значим*','p-value'], d:'Различие в тесте вряд ли случайно при такой выборке (обычно p < 0,05). Ничего не говорит о размере эффекта.', l:'research-3'},
+ {t:'Эффект новизны', a:['эффект* новизны'], d:'Новый вариант первые дни получает больше внимания просто потому, что новый. Поэтому ранние результаты теста завышены.', l:'research-3'},
+ {t:'STAR', a:['STAR'], d:'Структура поведенческого ответа: Situation → Task → Action → Result, и обязательно вывод.', l:'behavior-1'},
+ {t:'Whiteboard-задача', a:['whiteboard*','вайтборд*'], d:'Задача на собесе, которую решают вслух за 25–90 минут: уточнить, спроектировать, назвать метрики и риски.', l:'whiteboard-1'},
+ {t:'Trade-off', a:['trade-off*','компромисс*'], d:'Осознанный выбор, чем жертвуем ради чего: сроки против качества, гибкость против простоты.', l:'whiteboard-1'},
+ {t:'Дизайн-система', a:['дизайн-систем*','design system*'], d:'Токены, компоненты и правила, общие для дизайна и разработки. Продукт с внутренними пользователями.', l:'ui-1'},
+ {t:'Токен', a:['токен*','token*'], d:'Именованное значение (цвет, отступ, радиус), на которое ссылаются компоненты: color.bg.primary вместо #0B7D5F.', l:'ui-1'},
+ {t:'WCAG', a:['WCAG','AAA'], d:'Стандарт доступности. Уровень AA: контраст текста не ниже 4.5:1, крупного текста и элементов интерфейса — 3:1.', l:'ui-2'},
+ {t:'HIG и Material', a:['HIG','Human Interface Guidelines','Material*'], d:'Гайдлайны Apple (iOS) и Google (Android): навигация, жесты, системные компоненты, размеры.', l:'ui-2'},
+ {t:'pt и dp', a:['pt','dp'], d:'Единицы размера, не зависящие от плотности экрана: pt — в iOS, dp — в Android. Цель для касания: 44 pt / 48 dp.', l:'ui-2'},
+ {t:'Dynamic Type', a:['Dynamic Type'], d:'Системная настройка размера шрифта в iOS. Интерфейс должен расти по контенту, а не обрезать текст.', l:'ui-2'},
+ {t:'Пустое состояние', a:['пуст* состояни*','empty state*'], d:'Экран без данных. Хорошее пустое состояние объясняет, как сюда что-то попадёт, и ведёт к первому действию.', l:'ui-3'},
+ {t:'Скелетон', a:['скелетон*','skeleton*'], d:'Серые блоки в форме будущего контента, пока он загружается. Снижает ощущение ожидания.', l:'ui-3'},
+ {t:'Оптимистичный UI', a:['оптимистичн*'], d:'Интерфейс сразу показывает результат действия, не дожидаясь сервера, и откатывает при ошибке. Так работают лайки.', l:'ui-3'},
+ {t:'Auto Layout', a:['Auto Layout','автолейаут*'], d:'Режим Figma, в котором фрейм раскладывает элементы с заданными отступами и растёт по контенту. Без него макет «плывёт».', l:'portfolio-3'},
+ {t:'Variables', a:['Variables','modes','режим* переменн*'], d:'Переменные Figma для цветов, отступов, радиусов. Режимы (modes) переключают наборы значений: светлая/тёмная тема, платформа.', l:'portfolio-3'},
+ {t:'Свойства компонента', a:['boolean','instance swap','свойств* компонент*'], d:'Boolean — включить/выключить часть (иконку). Instance swap — заменить вложенный компонент. Позволяют не плодить варианты.', l:'portfolio-3'},
+ {t:'Dev Mode', a:['Dev Mode'], d:'Режим Figma для разработчиков: размеры, стили, код-сниппеты. Помогает handoff, но не заменяет описание логики.', l:'process-3'},
+ {t:'Handoff', a:['handoff*','хендофф*','dev-ready'], d:'Передача макетов в разработку: все состояния, edge cases, адаптивы, тексты и поведение.', l:'process-3'},
+ {t:'Авторский надзор', a:['авторск* надзор*','дизайн-ревью','design review'], d:'Проверка реализации дизайнером до релиза: отступы, состояния, тексты, поведение.', l:'process-3'},
+ {t:'Figma Make, v0, Lovable', a:['Figma Make','v0','Lovable','Cursor','ProtoPie'], d:'Инструменты, которые по промпту и макетам собирают работающий прототип. Нужны, чтобы проверить гипотезу до разработки.', l:'ai-3'},
+ {t:'Вайб-кодинг', a:['вайб-код*','vibe coding'], d:'Сборка прототипа с помощью ИИ без ручного написания кода. На собесах оценивают постановку задачи и проверку результата, а не код.', l:'ai-3'},
+ {t:'Галлюцинация ИИ', a:['галлюцинац*'], d:'Уверенный, но выдуманный ответ модели: несуществующая цитата, факт, цифра. Всё проверяют по источникам.', l:'ai-1'},
+ {t:'NDA', a:['NDA'], d:'Соглашение о неразглашении. В портфолио процесс показывают обобщённо, без закрытых данных.', l:'portfolio-1'},
+ {t:'ATS', a:['ATS'], d:'Системы, через которые рекрутеры фильтруют резюме по ключевым словам. Сложный графический PDF может не распознаться.', l:'job-1'},
+ {t:'Gross и net', a:['gross','net'], d:'Gross — сумма до вычета НДФЛ. Net — на руки.', l:'behavior-3'},
+];
+// acronyms (Latin capitals/digits only) match case-sensitively; words — case-insensitively
+const GL_RE = GLOSSARY.map(g=>g.a.map(a=>{ const stem=/\*$/.test(a); const words=a.replace(/\*/g,''); const esc2=words.replace(/[.+?^${}()|[\]\\\/]/g,'\\$&').replace(/ /g,'\\S*\\s+'); const acr=/^[A-Z0-9\/]+$/.test(words); return new RegExp(`(?<![\\p{L}\\p{N}])${esc2}${stem?'':'(?![\\p{L}\\p{N}])'}`, acr?'u':'iu'); }));
+function termsIn(text){ const out=[]; GL_RE.forEach((res,i)=>{ if(res.some(re=>re.test(text))) out.push(i); }); return out; }
+function termChips(text, exclude){ const ids=termsIn(text).filter(i=>!(exclude&&exclude.has(i))); if(!ids.length) return ''; return `<div class="terms"><span class="small muted">Термины:</span>${ids.map(i=>`<button class="termchip" data-act="term" data-arg="${i}">${esc(GLOSSARY[i].t)}</button>`).join('')}</div>`; }
+let TERM=null;
+function termSheet(){ if(TERM===null) return ''; const g=GLOSSARY[TERM]; const l=g.l&&lessonById(g.l); const inRun=L&&L.phase==='q'; return `<div class="sheet-bg" data-act="term-close"></div><div class="bsheet" role="dialog" aria-label="${esc(g.t)}"><div class="spread"><h2>${esc(g.t)}</h2><button class="iconbtn" data-act="term-close" aria-label="Закрыть">${I.close}</button></div><p>${esc(g.d)}</p>${g.x?`<p class="small muted">Пример: ${esc(g.x)}</p>`:''}${l?`<div class="row"><span class="small muted">Подробно в уроке «${esc(l.title)}»</span>${inRun||(L&&L.id===l.id)?'':`<button class="btn ghost sm" data-act="lesson" data-arg="${l.id}">Открыть урок</button>`}</div>`:''}</div>`; }
+let GQ='';
+function renderGlossary(){ const q=GQ.trim().toLowerCase(); const list=GLOSSARY.map((g,i)=>({g,i})).filter(({g})=>!q||(g.t+' '+g.d+' '+g.a.join(' ')).toLowerCase().includes(q)).sort((a,b)=>a.g.t.localeCompare(b.g.t,'ru'));
+  return `${topbar('exit',0,'')}<div class="stack fade"><div><div class="eyebrow">Словарь</div><h1>Термины курса</h1><p class="muted">${GLOSSARY.length} терминов, которые встречаются в уроках и на собесах.</p></div><label class="sr" for="gq">Поиск</label><input id="gq" class="gsearch" type="search" placeholder="Найти термин: CJM, retention, токен…" value="${esc(GQ)}" data-act="gq">
+  <div class="stack tight" id="glist">${list.map(({g,i})=>`<button class="topic" data-act="term" data-arg="${i}"><b style="font-weight:600">${esc(g.t)}</b><span class="small muted" style="text-align:left">${esc(g.d)}</span></button>`).join('')||'<div class="empty">Ничего не нашлось</div>'}</div></div>`; }
+</script>
+<script>
 // ---------- state ----------
 const KEY = 'midl-sobes-v2';
 let S = { setup:null, progress:{}, q:{}, wrong:{}, days:{}, daily:null, practice:[], mocks:[], custom:[], stories:{}, cvs:[], tasks:[], updatedAt:0 };
@@ -1035,8 +1144,8 @@ const qById = qid => { const [lid,idx]=qid.split('#'); const l=lessonById(lid); 
 
 // ---------- routing ----------
 function go(h){ if(location.hash!==('#'+h)) location.hash=h; else render(); }
-function route(){ const h=(location.hash||'').replace(/^#/,''); if(!S.setup && h!=='setup') return {v:'setup'}; const [v,...rest]=h.split('-'); const id=rest.join('-'); if(['lesson','topic','story'].includes(v)&&id) return {v,id}; if(['setup','plan','topics','review','review_run','daily','practice','vacancy','mock','mock_run','stories','stories_run','cv','tasks','task_run'].includes(h)) return {v:h}; return {v:'deck'}; }
-window.addEventListener('hashchange', ()=>{ const r=route(); if(!['lesson','review_run','daily','topic','mock_run'].includes(r.v)) L=null; stopTimer(); render(); });
+function route(){ const h=(location.hash||'').replace(/^#/,''); if(!S.setup && h!=='setup') return {v:'setup'}; const [v,...rest]=h.split('-'); const id=rest.join('-'); if(['lesson','topic','story'].includes(v)&&id) return {v,id}; if(['setup','plan','topics','review','review_run','daily','practice','vacancy','mock','mock_run','stories','stories_run','cv','tasks','task_run','glossary'].includes(h)) return {v:h}; return {v:'deck'}; }
+window.addEventListener('hashchange', ()=>{ TERM=null; const r=route(); if(!['lesson','review_run','daily','topic','mock_run'].includes(r.v)) L=null; stopTimer(); render(); });
 
 // ---------- shared ----------
 const mentor = text => `<div class="mentor"><div class="ava">${I.mentor}</div><div class="bubble">${text}</div></div>`;
@@ -1179,6 +1288,7 @@ function renderDeck(tab){
       </div></div>
       <div class="stack tight"><div class="eyebrow">Инструменты</div><div class="tools">
         <button class="tool" data-act="review"><b>Ошибки ${wl.length?`<span class="badge">${wl.length}</span>`:''}</b><span>${wl.length?'Вопросы, где вы ошибались':'Пока нет ошибок'}</span></button>
+        <button class="tool" data-act="glossary"><b>Словарь</b><span>${GLOSSARY.length} терминов с примерами</span></button>
         <button class="tool" data-act="cv"><b>Разбор резюме</b><span>Резюме, кейс или письмо глазами лида</span></button>
         <button class="tool" data-act="vacancy"><b>Урок по вакансии</b><span>${(S.custom||[]).length?`собрано: ${S.custom.length}`:'Вопросы под конкретную вакансию'}</span></button>
       </div></div>
@@ -1258,12 +1368,12 @@ function renderRun(){
   const footer = answered ? `<div class="footer-fb ${ok?'good':'bad'}"><div class="in"><b>${ok?'Так держать!':'Не совсем'}</b><p>${ok?esc(q.e[q.c]):'Правильно: '+esc(q.o[q.c])+'. '+esc(q.e[q.c].replace(/^(Верно|Да|Именно так|Точно)[:.]?\s*/,''))}</p><div class="row">${explain}<button class="btn ${ok?'good':'bad'}" style="flex:1" data-act="l-next">${L.step+1>=n?'К результату':'Дальше'}</button></div></div></div>` : '';
   const explainBox = typeof L.explain==='string'&&L.explain!=='busy' ? `<div class="explain" id="explain">${esc(L.explain)}</div>` : (L.explain==='busy'?`<div class="explain" id="explain">…</div>`:'');
   return `${top}<div class="stack fade">${confirm}${mentor(bub)}${summ}
-    <div class="sheet stack">${table}<p class="qtext">${esc(q.t)}</p><div class="opts">${q.o.map((o,i)=>{const cls=answered?(i===q.c?'correct':i===ch?'wrong':'dim'):'';return `<button class="opt ${cls}" data-act="l-pick" data-arg="${i}" ${answered?'disabled':''}><span>${esc(o)}</span><span class="ex">${esc(q.e[i])}</span></button>`;}).join('')}</div>${explainBox}</div>
+    <div class="sheet stack">${table}<p class="qtext">${esc(q.t)}</p><div class="opts">${q.o.map((o,i)=>{const cls=answered?(i===q.c?'correct':i===ch?'wrong':'dim'):'';return `<button class="opt ${cls}" data-act="l-pick" data-arg="${i}" ${answered?'disabled':''}><span>${esc(o)}</span><span class="ex">${esc(q.e[i])}</span></button>`;}).join('')}</div>${termChips((answered?[q.t,...q.o,...q.e]:[q.t,...q.o]).join(' '))}${explainBox}</div>
     ${answered?'<div style="height:140px"></div>':''}</div>${footer}`;
 }
 function renderSummary(){
   const l=L.lesson; const n=L.qs.length;
-  return `${topbar('exit',4,'')}<div class="stack fade">${mentor('Сначала коротко о главном')}<div class="sheet stack"><div><h2>${esc(l.title)}</h2><p class="small muted">${qWord(n)} · ~${lessonMinutes(l)} мин${isAsk(l)?' · <span style="color:var(--warn);font-weight:600">Спросят на собесе</span>':''}</p></div><ul class="summary">${L.summary.map(s=>`<li>${esc(s)}</li>`).join('')}</ul>${l.open?`<div class="echo"><span class="eyebrow">Спросят так</span><span>«${esc(l.open.q)}»</span></div>`:''}</div></div><div class="actions"><button class="btn primary wide" data-act="l-go">К вопросам</button></div>`;
+  return `${topbar('exit',4,'')}<div class="stack fade">${mentor('Сначала коротко о главном')}<div class="sheet stack"><div><h2>${esc(l.title)}</h2><p class="small muted">${qWord(n)} · ~${lessonMinutes(l)} мин${isAsk(l)?' · <span style="color:var(--warn);font-weight:600">Спросят на собесе</span>':''}</p></div><ul class="summary">${L.summary.map(s=>`<li>${esc(s)}</li>`).join('')}</ul>${termChips(L.summary.join(' '))}${l.open?`<div class="echo"><span class="eyebrow">Спросят так</span><span>«${esc(l.open.q)}»</span></div>`:''}</div></div><div class="actions"><button class="btn primary wide" data-act="l-go">К вопросам</button></div>`;
 }
 function pick(i){
   const q=L.qs[L.step]; if(L.chosen!==null) return; L.chosen=i; const ok=i===q.c; const now=Date.now();
@@ -1299,7 +1409,7 @@ function renderResult(){
 // ---------- open answer step (lesson) ----------
 function renderOpen(){
   const oq=L.lesson.open; const len=L.openText.trim().length; const t=target();
-  return `${topbar('exit',100,'')}<div class="stack fade">${mentor('Ответьте письменно так, как сказали бы вслух: 5–10 предложений, конкретика, цифры')}<div class="sheet stack openq"><div class="eyebrow">${t.open?'Нужен для зачёта':'Бонус'}</div><p class="q">${esc(oq.q)}</p>
+  return `${topbar('exit',100,'')}<div class="stack fade">${mentor('Ответьте письменно так, как сказали бы вслух: 5–10 предложений, конкретика, цифры')}<div class="sheet stack openq"><div class="eyebrow">${t.open?'Нужен для зачёта':'Бонус'}</div><p class="q">${esc(oq.q)}</p>${termChips(oq.q+' '+(oq.hint||[]).join(' '))}
     <label class="sr" for="oans">Ваш ответ</label><textarea id="oans" class="ans" placeholder="Напишите ответ, подсказка откроется после 100 символов" data-act="open-text">${esc(L.openText)}</textarea>
     ${len>=100?`<details class="set"><summary class="small">Что должно быть в сильном ответе</summary><ul class="hintlist" style="margin-top:8px">${oq.hint.map(h=>`<li>${esc(h)}</li>`).join('')}</ul></details>`:`<p class="note">Подсказка откроется, когда напишете ответ (${len}/100).</p>`}
     ${aiBlock()}</div><div style="height:130px"></div></div>
@@ -1505,6 +1615,9 @@ ${DEF_FIELDS.map(f=>`${f.t}: ${(T.fields[f.id]||'—').slice(0,1500)}`).join('\n
 // ---------- extra events (delegated from main handler) ----------
 function extraClick(act,arg){
   switch(act){
+    case 'term': { TERM=+arg; document.querySelectorAll('#app .sheet-bg,#app .bsheet').forEach(e=>e.remove()); document.getElementById('app').insertAdjacentHTML('beforeend', termSheet()); return true; }
+    case 'term-close': TERM=null; document.querySelectorAll('#app .sheet-bg,#app .bsheet').forEach(e=>e.remove()); return true;
+    case 'glossary': go('glossary'); return true;
     case 'stories': RH=null; stopTimer(); go('stories'); return true;
     case 'story': SB={busy:false,err:'',ai:null}; go('story-'+arg); return true;
     case 'story-save': { const id=route().id; storySave(id,null); SB.ai=null; render(); return true; }
@@ -1530,6 +1643,7 @@ function extraClick(act,arg){
   return false;
 }
 function extraInput(t,act){
+  if(act==='gq'){ GQ=t.value; const pos=t.selectionStart; render(); const el=document.getElementById('gq'); if(el){ el.focus(); el.setSelectionRange(pos,pos); } return true; }
   if(act==='story-text'){ const s=storyOf(route().id); s.draft=t.value; clearTimeout(SB.saveT); SB.saveT=setTimeout(save,800); const len=t.value.trim().length; document.querySelectorAll('[data-act="story-grade"],[data-act="story-save"]').forEach(b=>b.disabled=!(len>80)||SB.busy); const n=t.parentElement.querySelector('.note'); if(n) n.textContent=`${len} символов · вслух это примерно ${Math.round(len/900*60)} сек. Хорошо — 900–1800 (1–2 минуты).`; return true; }
   if(act==='cv-text'){ CV.text=t.value; const b=document.querySelector('[data-act="cv-go"]'); if(b) b.disabled=!(t.value.trim().length>150); return true; }
   if(act==='cv-vac'){ CV.vac=t.value; return true; }
@@ -1548,7 +1662,7 @@ function renderPractice(){
   const hist=(S.practice||[]).filter(h=>h.score).slice(-8).reverse(); const q=P.q; const len=P.text.trim().length;
   return `${topbar('exit',0,'')}<div class="stack fade"><div><div class="eyebrow">Тренировка ответов</div><h1>Отвечайте как на собесе</h1><p class="muted">Открытые вопросы из реальных собеседований. Напишите ответ, как сказали бы вслух${aiReady?', и получите разбор от «интервьюера»':''}.</p></div>
     <div class="seg">${chips}</div>
-    ${q?`<div class="sheet stack openq"><div class="eyebrow">${esc(q.ch)}</div><p class="q">${esc(q.q)}</p>
+    ${q?`<div class="sheet stack openq"><div class="eyebrow">${esc(q.ch)}</div><p class="q">${esc(q.q)}</p>${termChips(q.q+' '+(q.hint||[]).join(' '))}
       <label class="sr" for="pans">Ваш ответ</label><textarea id="pans" class="ans" placeholder="5–10 предложений: конкретика, цифры, ваш личный вклад" data-act="p-text">${esc(P.text)}</textarea>
       ${q.hint?.length ? (len>=100?`<details class="set"><summary class="small">Что должно быть в сильном ответе</summary><ul class="hintlist" style="margin-top:8px">${q.hint.map(h=>`<li>${esc(h)}</li>`).join('')}</ul></details>`:`<p class="note">Подсказка откроется, когда напишете ответ (${len}/100).</p>`) : ''}
       ${P.prevScore?`<p class="note">Прошлая оценка этого ответа: ${P.prevScore}/5</p>`:''}
@@ -1606,6 +1720,7 @@ function render(){
     case 'practice': html=renderPractice(); break;
     case 'vacancy': html=renderVacancy(); break;
     case 'plan': case 'topics': html=renderDeck(r.v); break;
+    case 'glossary': html=renderGlossary(); break;
     case 'stories': html=renderStories(); break;
     case 'story': html=renderStory(r.id); break;
     case 'stories_run': html=renderRehearsal(); break;
@@ -1614,7 +1729,7 @@ function render(){
     case 'task_run': html=T?renderTask():renderTasks(); break;
     default: html=renderDeck('deck');
   }
-  app.innerHTML=html; if(r.v==='deck'&&!window.__mapScrolled){ window.__mapScrolled=true; const cur=app.querySelector('.prow.cur'); if(cur&&doneCount()>0) cur.scrollIntoView({block:'center'}); } if(r.v!=='deck') window.__mapScrolled=false; if(L&&L.phase==='open'&&L.kind==='mock_run') paintTimer(); if(r.v==='stories_run'&&RH&&!timerId&&RH.i<RH.ids.length&&RH.left>0) rhTimer(); if(r.v==='task_run'&&T&&T.phase==='run') taskTick(); else if(r.v!=='task_run') clearInterval(taskTimer);
+  app.innerHTML=html+termSheet(); if(r.v==='deck'&&!window.__mapScrolled){ window.__mapScrolled=true; const cur=app.querySelector('.prow.cur'); if(cur&&doneCount()>0) cur.scrollIntoView({block:'center'}); } if(r.v!=='deck') window.__mapScrolled=false; if(L&&L.phase==='open'&&L.kind==='mock_run') paintTimer(); if(r.v==='stories_run'&&RH&&!timerId&&RH.i<RH.ids.length&&RH.left>0) rhTimer(); if(r.v==='task_run'&&T&&T.phase==='run') taskTick(); else if(r.v!=='task_run') clearInterval(taskTimer);
 }
 function exitRun(){ if(L && L.phase==='q' && L.answers.length && !L.confirmExit){ L.confirmExit=true; render(); window.scrollTo({top:0}); return; } L=null; stopTimer(); go('deck'); }
 document.getElementById('app').addEventListener('click', e=>{
