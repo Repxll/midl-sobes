@@ -235,6 +235,45 @@ details.set summary{cursor:pointer;font-weight:500}
 .hist details{border:1px solid var(--line);border-radius:12px;padding:10px 12px;background:var(--surface)}
 .hist summary{cursor:pointer;display:flex;justify-content:space-between;gap:10px;font-size:14px;list-style:none}
 .hist summary::-webkit-details-marker{display:none}
+/* game map */
+:root{--c1:#1D72C2;--c2:#0B7D5F;--c3:#6E4BC9;--c4:#B85A1E;--c5:#B0346A;--c6:#24808A;--gold:#E3A21A}
+.gamebar{display:flex;align-items:center;gap:14px;padding-block:4px}
+.gamebar .btn{margin-left:auto}
+.gb{display:inline-flex;align-items:center;gap:5px;font-size:15px;color:var(--muted)}
+.gb svg{width:20px;height:20px}
+.gb b{color:var(--fg);font-weight:600}
+.gb.hot svg{color:#F08A24} .gb.xp svg{color:var(--gold)}
+.pmap{display:grid;gap:22px;padding-bottom:20px}
+.pbanner{display:flex;align-items:center;gap:12px;padding:14px 16px;border-radius:16px;background:var(--h);color:#fff;box-shadow:0 4px 0 color-mix(in srgb,var(--h) 65%,#000)}
+.pbanner > div{flex:1;min-width:0;display:grid;gap:2px}
+.pbanner .eyebrow{color:rgba(255,255,255,.82)}
+.pbanner b{font-weight:600;font-size:16px;line-height:1.3}
+.pcount{font-size:13px;background:rgba(255,255,255,.2);padding:4px 10px;border-radius:99px;white-space:nowrap}
+.ppath{display:grid}
+.prow{position:relative;height:100px}
+.prow.cur{height:124px}
+.node{position:absolute;left:calc(50% - 34px + var(--o));top:14px;width:68px;height:68px;border-radius:50%;border:0;display:grid;place-items:center;background:var(--surface-2);color:var(--muted);box-shadow:0 6px 0 var(--line);transition:transform .1s ease}
+.prow.cur .node{top:38px}
+.node:active{transform:translateY(4px);box-shadow:0 2px 0 var(--line)}
+.node svg{width:28px;height:28px}
+.node.done{background:var(--h);color:#fff;box-shadow:0 6px 0 color-mix(in srgb,var(--h) 60%,#000)}
+.node.done svg{color:#FFD86B}
+.node.current{background:var(--h);color:#fff;box-shadow:0 6px 0 color-mix(in srgb,var(--h) 60%,#000),0 0 0 7px color-mix(in srgb,var(--h) 22%,transparent);animation:pulse 2s ease-in-out infinite}
+.node.tried{background:var(--surface);color:var(--warn);box-shadow:0 6px 0 var(--line),inset 0 0 0 3px var(--warn)}
+.node.chest{border-radius:20px;background:var(--surface);color:var(--muted);box-shadow:0 6px 0 var(--line),inset 0 0 0 2px var(--line)}
+.node.chest.open{background:var(--gold);color:#3A2A00;box-shadow:0 6px 0 #A9760F}
+@keyframes pulse{50%{box-shadow:0 6px 0 color-mix(in srgb,var(--h) 60%,#000),0 0 0 12px color-mix(in srgb,var(--h) 10%,transparent)}}
+.startpill{position:absolute;top:-34px;left:50%;transform:translateX(-50%);background:var(--surface);color:var(--h);border:2px solid var(--line);font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:4px 10px;border-radius:10px;white-space:nowrap}
+.startpill::after{content:"";position:absolute;bottom:-7px;left:50%;margin-left:-6px;border:6px solid transparent;border-top-color:var(--line);border-bottom:0}
+.plabel{position:absolute;top:22px;display:grid;gap:2px;font-size:14px;line-height:1.3}
+.prow.cur .plabel{top:46px}
+.plabel.right{left:calc(50% + 34px + var(--o) + 12px);right:0}
+.plabel.left{right:calc(50% + 34px - var(--o) + 12px);left:0;text-align:right}
+.plabel b{font-weight:500}
+.plabel span{font-size:12px;color:var(--muted)}
+.plabel .ask{color:var(--warn);font-weight:600} .plabel .good{color:var(--good);font-weight:600} .plabel .warn{color:var(--warn);font-weight:600}
+.xpgain{display:inline-flex;align-items:center;gap:4px;font-weight:700;color:var(--gold);font-family:var(--mono)}
+.xpgain svg{width:16px;height:16px}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 @media (max-width:420px){.sheet{padding:16px}.tiles{grid-template-columns:repeat(2,1fr)}}
 </style>
@@ -1100,40 +1139,39 @@ function lessonRow(l, ch, isNext){
   const p=S.progress[l.id]; const done=lessonDone(l); const n=sampleSize(l);
   return `<button class="lesson ${done?'done':isNext?'next':''}" data-act="lesson" data-arg="${l.id}"><span class="dot">${done?I.check:I.book}</span><span class="body"><b>${esc(l.title)}</b><span>${isNext?'<span class="nx">Следующий</span> · ':''}${qWord(n)} · ~${lessonMinutes(l)} мин${isAsk(l)?' · <span class="ask">Спросят</span>':''}${ch?` · ${esc(ch.title)}`:''}</span></span>${p?`<span class="score">${p.score}/${p.total}${p.passed?'':' ·!'}</span>`:''}</button>`;
 }
+// ---------- game map ----------
+const CH_HUES = ['--c1','--c2','--c3','--c4','--c5','--c6'];
+const PATH_OFF = [0,40,72,40,0,-40,-72,-40];
+const G = {
+  flame:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2c1 3.5-1.5 5-1.5 7.5 0 1.4 1 2.5 2.3 2.5 1.5 0 2.4-1.2 2.2-3 2.4 1.7 4 4.3 4 7a7 7 0 0 1-14 0c0-4.6 4.3-7.2 7-14z"/></svg>',
+  bolt:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M13 2L4 14h6l-1 8 9-12h-6z"/></svg>',
+  trophy:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 4h8v5a4 4 0 0 1-8 0zM8 6H5a3 3 0 0 0 3 4M16 6h3a3 3 0 0 1-3 4M12 13v4M8 20h8M10 17h4"/></svg>',
+  star:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1-4.4-4.3 6.1-.9z"/></svg>',
+};
+function xp(){ let x=0; Object.values(S.q).forEach(s=>x+=10*(s.ok||0)); Object.values(S.progress).forEach(p=>{ if(p.passed) x+=20; }); x+=50*(S.mocks||[]).length+50*(S.tasks||[]).length+30*STORIES.filter(s=>storyBest(s.id)).length; return x; }
+function gamebar(){ const st=streak(); return `<div class="gamebar"><span class="gb ${st?'hot':''}" title="Серия дней">${G.flame}<b class="mono">${st}</b></span><span class="gb xp" title="Очки">${G.bolt}<b class="mono">${xp()}</b></span><span class="gb" title="Уроков пройдено">${I.check}<b class="mono">${doneCount()}/${allLessons().length}</b></span><button class="btn ghost sm" data-act="setup">Настройки</button></div>`; }
+function pathNode(l, state, off, chId){
+  const p=S.progress[l.id]; const side=off>0?'left':'right'; const n=sampleSize(l);
+  const sub = state==='done' ? `<span class="good">${p.score}/${p.total}</span>` : state==='tried' ? `<span class="warn">${p.score}/${p.total} · не сдан</span>` : `${qWord(n)} · ~${lessonMinutes(l)} мин`;
+  return `<div class="prow ${state==='current'?'cur':''}" style="--o:${off}px"><button class="node ${state}" data-act="lesson" data-arg="${l.id}" aria-label="${esc(l.title)}" style="--h:var(${chId})">${state==='current'?'<span class="startpill">Начать</span>':''}${state==='done'?G.star:I.book}</button><div class="plabel ${side}"><b>${esc(l.title)}</b><span>${sub}${isAsk(l)?' · <span class="ask">Спросят</span>':''}</span></div></div>`;
+}
+function renderPath(){
+  const nextId=remaining()[0]?.id; let k=0;
+  return orderedChapters().map((c,ci)=>{
+    const hue=CH_HUES[ci%CH_HUES.length]; const done=c.lessons.filter(lessonDone).length; const all=done===c.lessons.length;
+    const nodes=c.lessons.map(l=>{ const p=S.progress[l.id]; const st=lessonDone(l)?'done':l.id===nextId?'current':p?'tried':'todo'; return pathNode(l,st,PATH_OFF[(k++)%PATH_OFF.length],hue); }).join('');
+    const off=PATH_OFF[(k++)%PATH_OFF.length]; const m=mastery(c);
+    const check=`<div class="prow" style="--o:${off}px"><button class="node chest ${all?'open':''}" data-act="topic" data-arg="${c.id}" aria-label="Проверка главы" style="--h:var(${hue})">${G.trophy}</button><div class="plabel ${off>0?'left':'right'}"><b>Проверка главы</b><span>${m.att?`${m.level==='strong'?'уверенно':m.level==='weak'?'шатко':''} · точность ${m.acc}%`:'6 вопросов вперемешку'}</span></div></div>`;
+    return `<section class="pchapter"><div class="pbanner" style="--h:var(${hue})"><div><span class="eyebrow">Глава ${ci+1}${focusIds().has(c.id)?' · ваш фокус':''}</span><b>${esc(c.title)}</b></div><span class="mono pcount">${done}/${c.lessons.length}</span></div><div class="ppath">${nodes}${check}</div></section>`;
+  }).join('');
+}
 function renderDeck(tab){
   buildDaily();
   const d=dLeft(), rem=remaining(), k=perDay(), td=todayCount(), next=rem[0], wl=wrongList(), fin=finalDays();
-  const tabs=`<div class="tabs" role="tablist"><button role="tab" aria-selected="${tab==='deck'}" data-act="go" data-arg="deck">Сегодня</button><button role="tab" aria-selected="${tab==='plan'}" data-act="go" data-arg="plan">План</button><button role="tab" aria-selected="${tab==='topics'}" data-act="go" data-arg="topics">Темы</button></div>`;
-  const head=`<div class="spread" style="padding-block:4px"><div class="eyebrow">Мидл-собес${S.setup.date?` · ${fmtDate(S.setup.date)}`:''}</div><button class="btn ghost sm" data-act="setup">Настройки</button></div>`;
+  const tabs=`<div class="tabs" role="tablist"><button role="tab" aria-selected="${tab==='deck'}" data-act="go" data-arg="deck">Карта</button><button role="tab" aria-selected="${tab==='plan'}" data-act="go" data-arg="plan">Практика</button><button role="tab" aria-selected="${tab==='topics'}" data-act="go" data-arg="topics">Темы</button></div>`;
   let body='';
   if(tab==='plan'){
-    const focus=focusIds(); const nextId=next?.id;
-    body=orderedChapters().map((c,ci)=>`<section class="chapter"><div class="chapter-head ${focus.has(c.id)?'focus':''}"><span class="n">${String(ci+1).padStart(2,'0')}</span><span class="t">${esc(c.title)}${focus.has(c.id)?' · ваш фокус':''}</span><span class="c">${c.lessons.filter(lessonDone).length}/${c.lessons.length}</span></div>${c.lessons.map(l=>lessonRow(l,null,l.id===nextId)).join('')}</section>`).join('')
-      +`<details class="set"><summary>Сбросить прогресс</summary><p class="note" style="margin-block:8px">Удалит результаты уроков, ошибки и историю тренировок. Настройки и уроки по вакансиям останутся.</p><button class="btn bad sm" data-act="reset">Точно сбросить</button></details>`;
-  } else if(tab==='topics'){
-    const focus=focusIds();
-    const items=orderedChapters().map(c=>({c,m:mastery(c)}));
-    body=`<div class="stack tight"><p class="muted small">Карта тем: что не трогали, где шатко, где уверенно. Тап — потренировать тему.</p>${items.map(({c,m})=>`<button class="topic" data-act="topic" data-arg="${c.id}"><div class="spread"><b style="font-weight:600">${esc(c.title)}</b><span class="tag ${m.level==='strong'?'good':m.level==='weak'?'warn':''}">${m.level==='strong'?'Уверенно':m.level==='weak'?'Шатко':'Не трогали'}</span></div><div class="bar"><i class="${m.level}" style="width:${Math.max(4,m.value)}%"></i></div><div class="meta"><span>${m.att?`точность ${m.acc}% · уроков ${m.cov}%`:'пока без ответов'}</span><span>${focus.has(c.id)?'вы отметили · ':''}${m.next?`повтор ${m.next<=todayISO()?'сегодня':fmtDate(m.next)}`:''}</span></div></button>`).join('')}</div>`;
-  } else {
-    const minutes = next ? Math.max(0,k-td)*lessonMinutes(next) : 0;
-    const title = d===null?'План без дедлайна': d<0?`Собес был ${dayWord(-d)} назад`: d===0?'Собес сегодня': `До собеса ${dayWord(d)}`;
-    const sub = fin?'Финальные дни: повтор и репетиция вместо новых уроков':rem.length?`Сегодня ${Math.min(td,k)}/${k} ${plural(k,'урок','урока','уроков')}${td<k?` · ~${minutes} мин`:' · готово'}`:'Все уроки пройдены';
-    const cta = fin||!next ? `<button class="btn primary wide col" data-act="mock"><span>Мок-интервью</span><span class="sub">8 вопросов + 2 ответа на время · ~15 мин</span></button>` : `<button class="btn primary wide col" data-act="lesson" data-arg="${next.id}"><span>${td>=k?'Ещё урок':'Начать'}: ${esc(next.title)}</span><span class="sub">${qWord(sampleSize(next))} · ~${lessonMinutes(next)} мин</span></button>`;
-    const st=streak();
-    const today = fin ? [
-        `<button class="card-cta" data-act="mock"><span class="ico">${I.mic}</span><span class="body"><b>Мок-интервью</b><span>Смешанные вопросы и два ответа на время</span></span></button>`,
-        storiesReady()?`<button class="card-cta" data-act="stories_run"><span class="ico">${I.doc}</span><span class="body"><b>Репетиция историй · ${storiesReady()}</b><span>Ваши истории вслух под таймер · ~${storiesReady()*3} мин</span></span></button>`:`<button class="card-cta" data-act="stories"><span class="ico">${I.doc}</span><span class="body"><b>Подготовьте истории</b><span>О себе, главный кейс, ошибка — минимум</span></span></button>`,
-        wl.length?`<button class="card-cta" data-act="review"><span class="ico">${I.repeat}</span><span class="body"><b>Разобрать ошибки · ${wl.length}</b><span>~${Math.max(2,Math.round(Math.min(8,wl.length)*0.8))} мин</span></span></button>`:'',
-        dailyPending()?`<button class="card-cta" data-act="daily"><span class="ico">${I.repeat}</span><span class="body"><b>Повтор дня · ${qWord(S.daily.qids.length)}</b><span>~${Math.round(S.daily.qids.length*0.7)} мин</span></span></button>`:''
-      ].join('') : [
-        dailyPending()?`<button class="card-cta" data-act="daily"><span class="ico">${I.repeat}</span><span class="body"><b>Повтор дня · ${qWord(S.daily.qids.length)}</b><span>${dailyTopics()} · ~${Math.round(S.daily.qids.length*0.7)} мин</span></span></button>`:'',
-        rem.slice(0,k).map((l,i)=>lessonRow(l,chapterOf(l.id),i===0)).join('')
-      ].join('');
-    body=`<div class="sheet stack"><div class="hero"><h1>${title}</h1><p class="muted">${sub}</p>${cta}</div>
-      <div class="spread">${weekRow()}<span class="small muted">${st?`серия ${dayWord(st)}`:'пройдите урок — начнётся серия'}${d&&d>0&&st?` · цель ${dayWord(d)} до собеса`:''}</span></div>
-      ${mentor(mentorLine())}</div>
-      ${today?`<div class="stack tight"><div class="eyebrow">Сегодня</div><div class="today">${today}</div></div>`:''}
-      <div class="stack tight"><div class="eyebrow">Практика</div><div class="tools">
+    body=`<div class="stack tight"><div class="eyebrow">Практика</div><div class="tools">
         <button class="tool" data-act="stories"><b>Мои истории</b><span>${storiesReady()?`готово ${storiesReady()} из 6`:'6 историй на вашем материале'}</span></button>
         <button class="tool" data-act="tasks"><b>Задача на время</b><span>${(S.tasks||[]).length?`решено: ${S.tasks.length}`:'25 минут и защита решения'}</span></button>
         <button class="tool" data-act="mock"><b>Мок-интервью</b><span>${S.mocks?.length?`лучший ${Math.max(...S.mocks.map(m=>m.score))}/8`:'Проверка под таймер'}</span></button>
@@ -1144,10 +1182,28 @@ function renderDeck(tab){
         <button class="tool" data-act="cv"><b>Разбор резюме</b><span>Резюме, кейс или письмо глазами лида</span></button>
         <button class="tool" data-act="vacancy"><b>Урок по вакансии</b><span>${(S.custom||[]).length?`собрано: ${S.custom.length}`:'Вопросы под конкретную вакансию'}</span></button>
       </div></div>
-      <div class="statline"><span>уроков <b>${doneCount()}/${allLessons().length}</b></span><span>точность <b>${accuracy()===null?'—':accuracy()+'%'}</b></span><span>ошибок в банке <b>${wl.length}</b></span><span>цель <b>${esc(target().t)}</b></span></div>`;
+      <div class="statline"><span>точность <b>${accuracy()===null?'—':accuracy()+'%'}</b></span><span>ошибок в банке <b>${wl.length}</b></span><span>цель <b>${esc(target().t)}</b></span></div>
+      <details class="set"><summary>Сбросить прогресс</summary><p class="note" style="margin-block:8px">Удалит результаты уроков, ошибки и историю тренировок. Настройки, истории и уроки по вакансиям останутся.</p><button class="btn bad sm" data-act="reset">Точно сбросить</button></details>`;
+  } else if(tab==='topics'){
+    const focus=focusIds();
+    const items=orderedChapters().map(c=>({c,m:mastery(c)}));
+    body=`<div class="stack tight"><p class="muted small">Что не трогали, где шатко, где уверенно. Тап — потренировать тему.</p>${items.map(({c,m})=>`<button class="topic" data-act="topic" data-arg="${c.id}"><div class="spread"><b style="font-weight:600">${esc(c.title)}</b><span class="tag ${m.level==='strong'?'good':m.level==='weak'?'warn':''}">${m.level==='strong'?'Уверенно':m.level==='weak'?'Шатко':'Не трогали'}</span></div><div class="bar"><i class="${m.level}" style="width:${Math.max(4,m.value)}%"></i></div><div class="meta"><span>${m.att?`точность ${m.acc}% · уроков ${m.cov}%`:'пока без ответов'}</span><span>${focus.has(c.id)?'вы отметили · ':''}${m.next?`повтор ${m.next<=todayISO()?'сегодня':fmtDate(m.next)}`:''}</span></div></button>`).join('')}</div>`;
+  } else {
+    const title = d===null?'План без дедлайна': d<0?`Собес был ${dayWord(-d)} назад`: d===0?'Собес сегодня': `До собеса ${dayWord(d)}`;
+    const sub = fin?'Финальные дни: повтор и репетиция вместо новых уроков':rem.length?`проходите ${k} ${plural(k,'урок','урока','уроков')} в день · сегодня ${Math.min(td,k)}/${k}`:'Карта пройдена';
+    const extra = [
+      fin?`<button class="card-cta" data-act="mock"><span class="ico">${I.mic}</span><span class="body"><b>Мок-интервью</b><span>8 вопросов и два ответа на время · ~15 мин</span></span></button>`:'',
+      fin?(storiesReady()?`<button class="card-cta" data-act="stories_run"><span class="ico">${I.doc}</span><span class="body"><b>Репетиция историй · ${storiesReady()}</b><span>Ваши истории вслух под таймер</span></span></button>`:`<button class="card-cta" data-act="stories"><span class="ico">${I.doc}</span><span class="body"><b>Подготовьте истории</b><span>О себе, главный кейс, ошибка — минимум</span></span></button>`):'',
+      dailyPending()?`<button class="card-cta" data-act="daily"><span class="ico">${I.repeat}</span><span class="body"><b>Повтор дня · ${qWord(S.daily.qids.length)}</b><span>${dailyTopics()} · ~${Math.round(S.daily.qids.length*0.7)} мин</span></span></button>`:'',
+      wl.length?`<button class="card-cta" data-act="review"><span class="ico">${I.repeat}</span><span class="body"><b>Ошибки <span class="badge">${wl.length}</span></b><span>Вернуть вопросы, где ошиблись</span></span></button>`:''
+    ].filter(Boolean).join('');
+    body=`<div class="sheet stack tight"><div><h2>${title}</h2><p class="small muted">${sub}</p></div>${weekRow()}${mentor(mentorLine())}</div>
+      ${extra?`<div class="today">${extra}</div>`:''}
+      <div class="pmap">${renderPath()}</div>`;
   }
-  return `<div class="stack fade">${head}${tabs}${body}</div>`;
+  return `<div class="stack fade">${gamebar()}${tabs}${body}</div>`;
 }
+
 function dailyTopics(){ const set=new Set(); S.daily.qids.forEach(q=>{ const c=chapterOf(q.split('#')[0]); if(c) set.add(c.title.split(':')[0].split(',')[0]); }); const a=[...set]; return a.length>2?`${a.slice(0,2).join(', ')} и ещё ${a.length-2}`:a.join(', '); }
 
 // ---------- mistakes screen ----------
@@ -1237,7 +1293,7 @@ function renderResult(){
   if(isL){ if(needOpen&&quizOk) ctas=`<button class="btn primary wide" data-act="l-open">Письменный ответ · нужен для зачёта</button><button class="btn ghost wide" data-act="exit">К плану</button>`; else if(!quizOk) ctas=`<button class="btn primary wide" data-act="l-retry">Пройти ещё раз · другие вопросы</button><button class="btn ghost wide" data-act="exit">К плану</button>`; else if(wrongs.length) ctas=`<button class="btn primary wide" data-act="review_run">Повторить ${qWord(wrongs.length)}</button><button class="btn ghost wide" data-act="exit">К плану</button>`; else ctas=(nextL?`<button class="btn primary wide" data-act="lesson" data-arg="${nextL.id}">Следующий: ${esc(nextL.title)}</button>`:'')+`<button class="btn ghost wide" data-act="exit">К плану</button>`; }
   else ctas=`<button class="btn primary wide" data-act="exit">К плану</button>`;
   const bonus = isL && lesson.open && !needOpen ? `<button class="card-cta" data-act="l-open"><span class="ico">${I.mic}</span><span class="body"><b>Бонус: письменный ответ по теме · ~2 мин</b><span>${esc(lesson.open.q)}</span></span></button>` : '';
-  return `${topbar('exit',100,'')}<div class="stack fade"><div class="sheet result"><div class="ring"><svg viewBox="0 0 132 132"><circle cx="66" cy="66" r="${r}" fill="none" stroke="var(--surface-2)" stroke-width="10"/><circle cx="66" cy="66" r="${r}" fill="none" stroke="${passed?'var(--good)':'var(--bad)'}" stroke-width="10" stroke-linecap="round" stroke-dasharray="${c}" stroke-dashoffset="${c*(1-score/total)}"/></svg><div class="v mono">${score}/${total}</div></div><h2>${title}</h2>${delta?`<p class="muted small">${delta}</p>`:''}${isL?`<p class="small">Сегодня ${Math.min(td,k)}/${k} ${plural(k,'урок','урока','уроков')}${st?` · серия ${dayWord(st)}`:''}</p>`:''}${mentor(!isL?'Повтор — лучший способ не ошибиться на встрече.':needOpen&&quizOk?'Напишите так, как сказали бы вслух — это и есть тренировка.':passed?'Следующий урок ждёт на главной.':'Не страшно: вопросы в повторе будут другие.')}</div>${qlist}${bonus}<div style="height:${isL?130:70}px"></div></div><div class="actions">${ctas}</div>`;
+  return `${topbar('exit',100,'')}<div class="stack fade"><div class="sheet result"><div class="ring"><svg viewBox="0 0 132 132"><circle cx="66" cy="66" r="${r}" fill="none" stroke="var(--surface-2)" stroke-width="10"/><circle cx="66" cy="66" r="${r}" fill="none" stroke="${passed?'var(--good)':'var(--bad)'}" stroke-width="10" stroke-linecap="round" stroke-dasharray="${c}" stroke-dashoffset="${c*(1-score/total)}"/></svg><div class="v mono">${score}/${total}</div></div><h2>${title}</h2>${delta?`<p class="muted small">${delta}</p>`:''}<span class="xpgain">${G.bolt}+${score*10+(isL&&passed?20:0)}</span>${isL?`<p class="small">Сегодня ${Math.min(td,k)}/${k} ${plural(k,'урок','урока','уроков')}${st?` · серия ${dayWord(st)}`:''}</p>`:''}${mentor(!isL?'Повтор — лучший способ не ошибиться на встрече.':needOpen&&quizOk?'Напишите так, как сказали бы вслух — это и есть тренировка.':passed?'Следующий урок ждёт на главной.':'Не страшно: вопросы в повторе будут другие.')}</div>${qlist}${bonus}<div style="height:${isL?130:70}px"></div></div><div class="actions">${ctas}</div>`;
 }
 
 // ---------- open answer step (lesson) ----------
@@ -1558,7 +1614,7 @@ function render(){
     case 'task_run': html=T?renderTask():renderTasks(); break;
     default: html=renderDeck('deck');
   }
-  app.innerHTML=html; if(L&&L.phase==='open'&&L.kind==='mock_run') paintTimer(); if(r.v==='stories_run'&&RH&&!timerId&&RH.i<RH.ids.length&&RH.left>0) rhTimer(); if(r.v==='task_run'&&T&&T.phase==='run') taskTick(); else if(r.v!=='task_run') clearInterval(taskTimer);
+  app.innerHTML=html; if(r.v==='deck'&&!window.__mapScrolled){ window.__mapScrolled=true; const cur=app.querySelector('.prow.cur'); if(cur&&doneCount()>0) cur.scrollIntoView({block:'center'}); } if(r.v!=='deck') window.__mapScrolled=false; if(L&&L.phase==='open'&&L.kind==='mock_run') paintTimer(); if(r.v==='stories_run'&&RH&&!timerId&&RH.i<RH.ids.length&&RH.left>0) rhTimer(); if(r.v==='task_run'&&T&&T.phase==='run') taskTick(); else if(r.v!=='task_run') clearInterval(taskTimer);
 }
 function exitRun(){ if(L && L.phase==='q' && L.answers.length && !L.confirmExit){ L.confirmExit=true; render(); window.scrollTo({top:0}); return; } L=null; stopTimer(); go('deck'); }
 document.getElementById('app').addEventListener('click', e=>{
